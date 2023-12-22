@@ -1,0 +1,5 @@
+version: v1
+plugins:
+  - plugin: ts
+    out: ../build/buf/ts
+    path: ["go", "run", "../cmd/protoc-gen-ts"]
