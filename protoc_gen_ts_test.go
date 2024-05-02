@@ -10,12 +10,12 @@ import (
 )
 
 func TestBuf(t *testing.T) {
-	if err := os.RemoveAll(filepath.Join("build", "buf")); err != nil {
+	if err := os.RemoveAll(filepath.Join("out", "buf")); err != nil {
 		t.Fatalf("failed to remove build directory: %v", err)
 	}
 
 	output := bytes.Buffer{}
-	cmd := exec.Command("go", "run", "github.com/bufbuild/buf/cmd/buf@v1.28.1", "generate")
+	cmd := exec.Command("go", "run", "github.com/bufbuild/buf/cmd/buf@v1.31.0", "generate")
 	cmd.Stderr = &output
 	cmd.Stdout = &output
 	cmd.Dir = "testdata"
@@ -24,7 +24,7 @@ func TestBuf(t *testing.T) {
 	}
 
 	for _, path := range []string{
-		filepath.Join("build", "buf", "ts", "helloworld.ts"),
+		filepath.Join("out", "buf", "ts", "helloworld.ts"),
 	} {
 		if _, err := os.Stat(path); err != nil {
 			t.Errorf("failed to stat %v: %v", path, err)
@@ -37,17 +37,17 @@ func TestProtoc(t *testing.T) {
 		t.Skip("protoc not found")
 	}
 
-	outDir := filepath.Join("build", "protoc")
+	outDir := filepath.Join("out", "protoc")
 	if err := os.RemoveAll(outDir); err != nil {
 		t.Fatalf("failed to remove build directory: %v", err)
 	}
-	if err := os.RemoveAll(filepath.Join("build", "plugins")); err != nil {
+	if err := os.RemoveAll(filepath.Join("out", "plugins")); err != nil {
 		t.Fatalf("failed to remove build directory: %v", err)
 	}
 
 	plugin := "ts"
 	output := bytes.Buffer{}
-	cmd := exec.Command("go", "build", "-o", filepath.Join("build", "plugins", "protoc-gen-"+plugin), "./cmd/protoc-gen-"+plugin)
+	cmd := exec.Command("go", "build", "-o", filepath.Join("out", "plugins", "protoc-gen-"+plugin), "./cmd/protoc-gen-"+plugin)
 	cmd.Stderr = &output
 	cmd.Stdout = &output
 	if err := cmd.Run(); err != nil {
@@ -61,7 +61,7 @@ func TestProtoc(t *testing.T) {
 	env := os.Environ()
 	for i, val := range env {
 		if strings.HasPrefix(val, "PATH=") {
-			env[i] = "PATH=" + filepath.Join("build", "plugins") + string(os.PathListSeparator) + val[len("PATH="):]
+			env[i] = "PATH=" + filepath.Join("out", "plugins") + string(os.PathListSeparator) + val[len("PATH="):]
 		}
 	}
 	cmd = exec.Command(
@@ -78,7 +78,7 @@ func TestProtoc(t *testing.T) {
 	}
 
 	for _, path := range []string{
-		filepath.Join("build", "protoc", "ts", "helloworld.ts"),
+		filepath.Join("out", "protoc", "ts", "helloworld.ts"),
 	} {
 		if _, err := os.Stat(path); err != nil {
 			t.Errorf("failed to stat %v: %v", path, err)

@@ -1,6 +1,6 @@
 .idea
 .vscode
-build
+out
 dist
 go.work.sum
 
